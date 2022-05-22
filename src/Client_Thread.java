@@ -15,7 +15,6 @@ public class Client_Thread extends Thread implements RTLS_Variable {
     private ObjectInputStream ois;
     private byte[] buf = new byte[512];
     private ObjectOutputStream oos;
-    private int RTLS_ID = 0;
     private int RTLS_STATE = 0;
     private int RTLS_X = 0;
     private int RTLS_Y = 0;
@@ -50,9 +49,6 @@ public class Client_Thread extends Thread implements RTLS_Variable {
         oos.writeObject(buf_login);
     }
 
-    public int get_RTLS_ID() {
-        return RTLS_ID;
-    }
 
     public int get_RTLS_STATE() {
         return RTLS_STATE;
@@ -71,10 +67,7 @@ public class Client_Thread extends Thread implements RTLS_Variable {
         try {
             while (true) {
                 buf = (byte[]) ois.readObject();
-                int sender = 0;
-                int receiver = 0;
                 byte[] int_byte = new byte[4];
-                byte[] msg_byte = null;
                 if (buf[0] == STX && buf[buf.length - 1] == ETX) {
                     switch (buf[1]) {
                         case CMD_LOGIN: // 클라이언트가 접속하면 전송하는 CMD_LOGIN 패킷을 처리
@@ -90,14 +83,6 @@ public class Client_Thread extends Thread implements RTLS_Variable {
                             }
                             break;
                         case CMD_MSG: // 클라이언트가 전송하는 CMD_MSG 패킷을 처리
-                            // CMD_MSG 패킷을 분석 후 receiver에게 CMD_MSG 패킷을 전송, 데이터베이스에 채팅로그 저장
-
-                            sender = (int) buf[2];
-                            receiver = (int) buf[3];
-                            msg_byte = new byte[buf.length - 5];
-                            System.arraycopy(buf, 4, msg_byte, 0, buf.length - 5);
-
-                            // CMD_MSG 패킷을 분석 후 receiver에게 CMD_MSG 패킷을 전송
                             for (int key : Server.Map_getkeySet()) {
                                 if (key != Id) {
                                     ObjectOutputStream send_out = ((Client_Thread) Server.Map_getValue(key)).oos;
@@ -109,7 +94,7 @@ public class Client_Thread extends Thread implements RTLS_Variable {
                             // 클라이언트에 배정된 쓰레드에 위치,상태를 저장, 데이터베이스에 클라이언트의 위치,상태를 저장
 
                             // 클라이언트에 배정된 쓰레드에 위치,상태를 저장
-                            RTLS_ID = (int) buf[2];
+                            Id = (int) buf[2];
                             RTLS_STATE = (int) buf[3];
                             System.arraycopy(buf, 4, int_byte, 0, 4);
                             RTLS_X = ByteBuffer.wrap(int_byte).getInt();
@@ -117,7 +102,7 @@ public class Client_Thread extends Thread implements RTLS_Variable {
                             RTLS_Y = ByteBuffer.wrap(int_byte).getInt();
 
                             // 데이터베이스에 클라이언트의 위치,상태를 저장
-                            Server.addDB(RTLS_ID, RTLS_X, RTLS_Y, (byte)RTLS_STATE);
+                            Server.addDB(Id, RTLS_X, RTLS_Y, (byte)RTLS_STATE);
                             break;
                         default:
                             break;

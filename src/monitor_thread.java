@@ -5,24 +5,19 @@ import java.nio.ByteBuffer;
 
 //모니터링에 모든 클라이언트들의 위치,상태를 전송하는 쓰레드
 public class monitor_thread extends Thread implements RTLS_Variable {
-    private ServerSocket listener_monitor;
-    private Socket socket_monitor;
     private OutputStream os_monitor;
     private ObjectOutputStream oos_monitor;
     private InputStream is_monitor = null;
     private ObjectInputStream ois_monitor;
-    private byte[] buf_monitor;
-    private byte[] buf_monitor_recode = new byte[10];
-    private byte[] int_byte = new byte[4];
     private RTLS_Server Server;
     private monitor_receiver monitor_receiver;
     public monitor_thread(RTLS_Server server) throws IOException {
         setName("monitor_thread");
         Server = server;
         //모니터링과 접속
-        listener_monitor = new ServerSocket(3001);
+        ServerSocket listener_monitor = new ServerSocket(3001);
         System.out.println("monitor의 연결을 기다리고있습니다....");
-        socket_monitor = listener_monitor.accept();
+        Socket socket_monitor = listener_monitor.accept();
         System.out.println("monitor와 연결되었습니다.");
         os_monitor = socket_monitor.getOutputStream();
         oos_monitor = new ObjectOutputStream(os_monitor);
@@ -33,6 +28,9 @@ public class monitor_thread extends Thread implements RTLS_Variable {
     }
     @Override
     public void run() {
+        byte[] buf_monitor;
+        byte[] buf_monitor_recode = new byte[10];
+        byte[] int_byte = new byte[4];
         try {
             //모니터링에 모든 클라이언트들의 위치,상태를 1초마다 전송
             while(true)

@@ -4,8 +4,6 @@ import java.net.Socket;
 
 //새로운 클라이언트가 접속했을때 지연되지 않도록 클라이언트를 받고 바로 큐로 넣기만 하는 쓰레드
 public class accepter extends Thread {
-    private ServerSocket listener = null;
-    private Socket socket = null;
     private RTLS_Server Server;
     public accepter(RTLS_Server server) {
         setName("accepter");
@@ -14,6 +12,8 @@ public class accepter extends Thread {
 
     @Override
     public void run() {
+        ServerSocket listener = null;
+        Socket socket = null;
         try {
             listener = new ServerSocket(3000);
             while(true)

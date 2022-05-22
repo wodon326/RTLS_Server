@@ -38,10 +38,8 @@ public class monitor_receiver extends Thread implements RTLS_Variable {
                                 System.arraycopy(int_byte, 0, buf_path_data, 6, 4);
                                 if(path == get_path.get(get_path.size()-1)){
                                     buf_path_data[10] = (byte)1;
-                                    System.out.println("path!!!");
                                 }else{
                                     buf_path_data[10] = (byte)0;
-                                    System.out.println("path###");
                                 }
                                 buf_path = makepacket(CMD_PATH, buf_path_data);
                                 oos_monitor.writeObject(buf_path);
