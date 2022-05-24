@@ -62,7 +62,25 @@ public class RTLS_Server implements RTLS_Variable {
     public int get_Clientnum() {
         return Client_num;
     }
+    public ObjectOutputStream getMonitorOos(){
+        return Monitor.getOos();
+    }
 
+    public void Remove_Client(int ID){
+        Client_num--;
+        db.Remove_Client(ID);
+        client_map.remove(ID);
+        byte[] buf_Exit = new byte[4];
+        buf_Exit[0] = STX;
+        buf_Exit[1] = CMD_EXIT;
+        buf_Exit[2] = (byte)ID;
+        buf_Exit[3] = ETX;
+        try {
+            Monitor.getOos().writeObject(buf_Exit);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
     public void new_Client_access(byte ID) throws IOException {
         Client_num++;
         byte[] buf_login = new byte[4];

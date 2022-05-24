@@ -18,6 +18,9 @@ public class DB {
             }
         }
     }
+    public void Remove_Client(int ID){
+        db.remove(ID);
+    }
     public void newClient(int ID){
         db.put(ID,new ArrayList<>());
     }

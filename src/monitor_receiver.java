@@ -45,6 +45,21 @@ public class monitor_receiver extends Thread implements RTLS_Variable {
                                 oos_monitor.writeObject(buf_path);
                             }
                             break;
+                        case CMD_RESCUE:
+                            id = (int) buf[2];
+                            for (int key : server.Map_getkeySet()) {
+                                if (key != id) {
+                                    ObjectOutputStream send_out = ((Client_Thread) server.Map_getValue(key)).getOos();
+                                    send_out.writeObject(buf);
+                                }
+                            }
+                            break;
+                        case CMD_LOCATION_ALERTS:
+                            for (int key : server.Map_getkeySet()) {
+                                ObjectOutputStream send_out = ((Client_Thread) server.Map_getValue(key)).getOos();
+                                send_out.writeObject(buf);
+                            }
+                            break;
                         default:
                             break;
                     }
